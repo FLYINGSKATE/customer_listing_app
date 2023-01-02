@@ -1,5 +1,7 @@
 import 'package:customer_listing_app/utils/ApiRepository.dart';
 import 'package:customer_listing_app/utils/utility.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_notification_scheduler/firebase_notification_scheduler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -38,8 +40,16 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
   String? unitErrorText;
   String? customerAddressErrorText;
 
+  DateTime? endDateTime ;
+  DateTime? startDateTime ;
+
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  final FirebaseNotificationScheduler firebaseNotificationScheduler =
+  FirebaseNotificationScheduler(authenticationKey: 'MjdhYWYyOTItZDdmMi00NjJmLThmMjMtMzlkZGRkMzMzZWYzOlhFczZrc3JSOGhaUng3VXZkRk51Qy9SOHY4NGM0Rks=', rapidApiKey: '');
+
+  late Future<List<ScheduledNotification>> getScheduledNotificationFuture;
 
   @override
   void initState() {
@@ -189,7 +199,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                         );
 
                         if(pickedDate != null ){
-                          print(pickedDate);  //pickedDate output format => 2021-03-10 00:00:00.000
+                          print(pickedDate);
+                          startDateTime = pickedDate;//pickedDate output format => 2021-03-10 00:00:00.000
                           String formattedDate = DateFormat('dd/MM/yyyy').format(pickedDate);
                           print(formattedDate); //formatted date output using intl package =>  2021-03-16
                           //you can implement different kind of Date Format here according to your requirement
@@ -311,7 +322,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                         );
 
                         if(pickedDate != null ){
-                          print(pickedDate);  //pickedDate output format => 2021-03-10 00:00:00.000
+                          print(pickedDate);
+                          endDateTime = pickedDate;//pickedDate output format => 2021-03-10 00:00:00.000
                           String formattedDate = DateFormat('dd/MM/yyyy').format(pickedDate);
                           print(formattedDate); //formatted date output using intl package =>  2021-03-16
                           //you can implement different kind of Date Format here according to your requirement
@@ -752,17 +764,18 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                               areaController!.text,
                               caseIdController!.text,
                               eggController!.text,
-                              endDateController!.text,
-                              startDateController!.text,
+                              endDateTime!,
+                              startDateTime!,
                               customerNameController!.text,
                               remarkController!.text,
                               unitController!.text,
                               wsController!.text,
                               customerMobileNumberController!.text,
                             );
-                            Loader.hide();
+                            //Loader.hide();
                             if(isCustomerAddedSuccessfully){
                               print("Added Customer Successfully");
+                              scheduleAPushNotification(customerNameController!.text.toString(),endDateTime!);
                             }
                             else{
                               print("Some Error");
@@ -804,4 +817,52 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
       ),
     );
   }
+
+  /*Future<void> scheduleAPushNotification(String customerName,DateTime endDate) async {
+
+    String? token = await FirebaseMessaging.instance.getToken();
+
+
+    //Schedules a notification to the topic 'any' for next minute
+    final String _payload = {
+      'to': token,
+      "click_action": "FLUTTER_NOTIFICATION_CLICK",
+      "show_in_foreground": true,
+      "notification": {
+        "title": customerName+"\'s",
+        "body": "Subscription Ends Today"
+      },
+      "data": {"key_1": "Value for key_1", "key_2": "Value for key_2"}
+    }.toString();
+    final DateTime _now = DateTime.now().toUtc();
+    final DateTime _dateTimeInUtc = _now.add(const Duration(minutes: 1));
+
+    await firebaseNotificationScheduler.scheduleNotification(
+        payload: _payload, dateTimeInUtc: _dateTimeInUtc);
+  }*/
+
+  Future<void> scheduleAPushNotification(String customerName,DateTime endDate) async {
+
+    String? token = await FirebaseMessaging.instance.getToken();
+
+
+    //Schedules a notification to the topic 'any' for next minute
+    final String _payload = {
+      'to': token,
+      "click_action": "FLUTTER_NOTIFICATION_CLICK",
+      "show_in_foreground": true,
+      "notification": {
+        "title": customerName+"\'s",
+        "body": "Subscription Ends Today"
+      },
+      "data": {"key_1": "Value for key_1", "key_2": "Value for key_2"}
+    }.toString();
+    final DateTime _now = DateTime.now().toUtc();
+    final DateTime _dateTimeInUtc = _now.add(const Duration(minutes: 1));
+
+    await firebaseNotificationScheduler.scheduleNotification(
+        payload: _payload, dateTimeInUtc: _dateTimeInUtc);
+  }
+
+
 }

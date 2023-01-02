@@ -118,7 +118,7 @@ class SplashScreenState extends State<SplashScreen> {
 
 
   Future<void> navigateToProperScreen() async {
-    await Future.delayed(Duration(seconds: 130));
+    await Future.delayed(Duration(seconds: 1));
     final prefs = await SharedPreferences.getInstance();
     //prefs.clear();
     // Save an integer value to 'counter' key.

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ProfileScreen extends StatefulWidget {
 
@@ -16,6 +17,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
 
     double height = MediaQuery.of(context).size.height;
+
+
+    String startDate = DateFormat('dd/MM/yyyy').format((widget.profileData["start_date"]).toDate());
+    String endDate = DateFormat('dd/MM/yyyy').format((widget.profileData["end_date"]).toDate());
 
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
@@ -53,7 +58,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         fontSize: 12,
                         fontWeight: FontWeight.w200,
                       ),),
-                      Text(widget.profileData["start_date"],style: Theme.of(context).textTheme.headline1?.copyWith(
+                      Text(startDate,style: Theme.of(context).textTheme.headline1?.copyWith(
                         color: Theme.of(context).primaryColor,
                         fontSize: 22,
                         fontWeight: FontWeight.w200,
@@ -76,7 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         fontSize: 12,
                         fontWeight: FontWeight.w200,
                       ),),
-                      Text(widget.profileData["end_date"],style: Theme.of(context).textTheme.headline1?.copyWith(
+                      Text(endDate,style: Theme.of(context).textTheme.headline1?.copyWith(
                         color: Theme.of(context).primaryColor,
                         fontSize: 22,
                         fontWeight: FontWeight.w200,

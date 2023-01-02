@@ -14,8 +14,8 @@ class ApiRepository{
       String area,
       String caseID,
       String eggName,
-      String endDate,
-      String startDate,
+      DateTime endDate,
+      DateTime startDate,
       String customerName,
       String remark,
       String unit,
@@ -105,7 +105,7 @@ class ApiRepository{
     //print("Adding"+contact.displayName!);
     bool isCustomerAddedSuccessfully = false;
     try {
-      await FirebaseFirestore.instance.collection("/"+mailId).doc("/UserDetails").collection("/customers").get().then((value) {
+      await FirebaseFirestore.instance.collection("/"+mailId).doc("/UserDetails").collection("/customers").where("end_date", isLessThanOrEqualTo: new DateTime.now()).get().then((value) {
         docs = value.docs;
       }).onError((error, stackTrace) {
         return null;

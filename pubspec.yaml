@@ -47,6 +47,8 @@ dependencies:
   google_sign_in: ^5.4.2
   email_validator: ^2.1.17
   firebase_messaging: ^14.2.1
+  firebase_notification_scheduler: ^0.0.2
+  http: ^0.13.5
 
 dev_dependencies:
   flutter_test:

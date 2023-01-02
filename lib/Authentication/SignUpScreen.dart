@@ -1,5 +1,6 @@
 import 'package:customer_listing_app/utils/ApiRepository.dart';
 import 'package:customer_listing_app/utils/AuthenticationHelper.dart';
+import 'package:customer_listing_app/utils/utility.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
@@ -203,30 +204,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     if(passwordController.text.isNotEmpty){
                       //Show Loader
                       PleaseWaitLoaderShow();
-                      await ApiRepository().AddUser(emailAddressController.text,passwordController.text);
+                      bool isUserAddedSuccessfully = await ApiRepository().AddUser(emailAddressController.text,passwordController.text);
                       Loader.hide();
                       //Show Dialog Notification
-                      showAnimatedDialog(
-                        context: context,
-                        barrierDismissible: true,
-                        builder: (BuildContext context) {
-                          return ClassicGeneralDialogWidget(
-                            titleText: 'Title',
-                            contentText: 'content',
-                            onPositiveClick: () {
-                              Navigator.of(context).pop();
-                            },
-                            onNegativeClick: () {
-                              Navigator.of(context).pop();
-                            },
-                          );
-                        },
-                        animationType: DialogTransitionType.size,
-                        curve: Curves.fastOutSlowIn,
-                        duration: Duration(seconds: 1),
-                      );
-                      await Future.delayed(Duration(seconds: 1));
-                      Navigator.pushReplacementNamed(context, "HomeScreen");
+                      if(isUserAddedSuccessfully){
+                        Utility().showCustomDialogBox(isUserAddedSuccessfully, "Success", "Email Login Success", context);
+                        Navigator.pushReplacementNamed(context, "HomeScreen");
+                      }
+                      else{
+                        Utility().showCustomDialogBox(isUserAddedSuccessfully, "Error", "Email Login Unsuccessful", context);
+                        return;
+                      }
+
                     }
                   }
                   else{
