@@ -17,36 +17,41 @@ class AuthenticationHelper {
   );
 
   //SIGN UP METHOD
-  Future<String?> signUp(String? email, String? password) async {
+  Future<bool> signUp(String? email, String? password) async {
+
     try {
       await _auth.createUserWithEmailAndPassword(
         email: email!,
         password: password!,
-      ).then((value) {
-        return "Logged In Successfully";
-      }).whenComplete(() {
-        return "Logged In Successfully";
-      });
+      );
+      print("Login Success!");
+      return true;
     } on FirebaseAuthException catch (e) {
-      return e.message.toString();
+      print(e.message.toString());
+      return false;
     }
     catch (signUpError) {
       if (signUpError is PlatformException) {
         if (signUpError.code == 'ERROR_EMAIL_ALREADY_IN_USE') {
           /// `foo@bar.com` has alread been registered.
-          return "$email already exists , Do you want to Login?";
+          ///
+          print("$email already exists , Do you want to Login?");
+          return false;
         }
       }
+      return false;
     }
+
   }
 
   //SIGN IN METHOD
-  Future signIn({String? email, String? password}) async {
+  Future<bool> signIn(String? email, String? password) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email!, password: password!);
-      return null;
+      return true;
     } on FirebaseAuthException catch (e) {
-      return e.message;
+      print(e.message);
+      return false;
     }
   }
 
@@ -57,19 +62,27 @@ class AuthenticationHelper {
   }
 
 
-  //Google Sign In
+  /*//Google Sign In
   Future<bool> handleGoogleSignIn() async {
     bool signedInSuccessful = false;
     try {
       await _googleSignIn.signIn().then((value) async {
         print("_googleSignIn.currentUser?.email");
         print(_googleSignIn.currentUser?.email);
-        await ApiRepository().AddUser(_googleSignIn.currentUser?.email, "password");
+
+        User? user = FirebaseAuth.instance.currentUser;
+        print("user.email");
+        print(user?.email);
+
+        await ApiRepository().AddUser(user?.email, "password");
         signedInSuccessful = true;
       }).whenComplete(() async {
         print("_googleSignIn.currentUser?.email");
         print(_googleSignIn.currentUser?.email);
-        await ApiRepository().AddUser(_googleSignIn.currentUser?.email, "password");
+        User? user = FirebaseAuth.instance.currentUser;
+        print("user.email");
+        print(user?.email);
+        await ApiRepository().AddUser(user?.email, "password");
         signedInSuccessful = true;
       });
     } catch (error) {
@@ -79,6 +92,6 @@ class AuthenticationHelper {
   }
 
   //Google Sign Out
-  Future<void> handleGoogleSignOut() => _googleSignIn.disconnect();
+  Future<void> handleGoogleSignOut() => _googleSignIn.disconnect();*/
 
 }

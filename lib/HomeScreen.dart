@@ -12,6 +12,19 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
+  late Future<List<DocumentSnapshot>?> myCustomerSnapshotFuture;
+
+  List<DocumentSnapshot>? seacrhSpecificCustomers;
+  List<DocumentSnapshot>? originalData;
+
+  TextEditingController searchTextEditingController = TextEditingController();
+  @override
+  void initState() {
+    // TODO: implement initState
+    myCustomerSnapshotFuture = getCustomersList();
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -42,17 +55,93 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: Icon(
-              Icons.notifications_paused,
-              color: Colors.white,
-              size: 30,
-            ),
-            onPressed: () {
-              print('IconButton pressed ...');
-              Navigator.pushNamed(context, 'NotificationScreen');
+
+          FutureBuilder(
+            builder: (ctx, snapshot) {
+              // Checking if future is resolved or not
+              if (snapshot.connectionState == ConnectionState.done) {
+                // If we got an error
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      '${snapshot.error} occurred',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  );
+
+                  // if we got our data
+                } else if (snapshot.hasData) {
+                  // Extracting data from snapshot object
+                  final data = snapshot.data as List<DocumentSnapshot>?;
+
+                  int count = 0;
+                  //"end_date", isLessThanOrEqualTo: new DateTime.now()
+                  data?.forEach((element) {
+                    if(DateTime.now().isBefore(element["end_date"].toDate()) || DateTime.now().isAtSameMomentAs(element["end_date"].toDate())){
+                      count++;
+                    }
+                  });
+
+                  return (count==0)?InkWell(
+                    onTap: () {
+                      print('IconButton pressed ...');
+                      Navigator.pushNamed(context, 'NotificationScreen');
+                    },
+                    child: Stack(
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            Icons.notifications_paused,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                          onPressed: () {
+                            print('IconButton pressed ...');
+                            Navigator.pushNamed(context, 'NotificationScreen');
+                          },
+                        ),
+                        Padding(padding:EdgeInsets.only(top: 5,left: 5) ,child: CircleAvatar(
+                          radius: 10,
+                          backgroundColor: Colors.red,
+                          child: Center(child: Text(count.toString(),style: TextStyle(fontSize: 12),),),
+                        ),)
+
+                      ],
+                    ),
+                  ):IconButton(
+                    icon: Icon(
+                      Icons.notifications_paused,
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                    onPressed: () {
+                      print('IconButton pressed ...');
+                      Navigator.pushNamed(context, 'NotificationScreen');
+                    },
+                  );
+                }
+              }
+
+              // Displaying LoadingSpinner to indicate waiting state
+              return IconButton(
+                icon: Icon(
+                  Icons.notifications_paused,
+                  color: Colors.white,
+                  size: 30,
+                ),
+                onPressed: () {
+                  print('IconButton pressed ...');
+                  Navigator.pushNamed(context, 'NotificationScreen');
+                },
+              );
             },
+
+            // Future that needs to be resolved
+            // inorder to display something on the Canvas
+            future: myCustomerSnapshotFuture,
           ),
+
+
         ],
         centerTitle: false,
         elevation: 2,
@@ -77,6 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: TextFormField(
               autofocus: true,
+              controller: searchTextEditingController,
               obscureText: false,
               decoration: InputDecoration(
                 labelText: 'Search Customers',
@@ -125,6 +215,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 size: 24,
               ),
               onPressed: () {
+
+                seacrhSpecificCustomers = List.from(originalData!);
+                if(searchTextEditingController.text.length>0){
+                  seacrhSpecificCustomers?.removeWhere( (element) => !(element["customer_name"].toString().contains(searchTextEditingController.text)));
+                  print(seacrhSpecificCustomers?.toList());
+                }
+
+                setState(() {});
                 print('IconButton pressed ...');
               },
             ),
@@ -155,6 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (ctx, snapshot) {
             // Checking if future is resolved or not
             if (snapshot.connectionState == ConnectionState.done) {
+              print("Connection established");
               // If we got an error
               if (snapshot.hasError) {
                 return Center(
@@ -169,6 +268,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Extracting data from snapshot object
                 final data = snapshot.data as List<DocumentSnapshot>?;
 
+
+
+                if(searchTextEditingController.text.length<1){
+                  seacrhSpecificCustomers = List.from(data!);
+                }
+                originalData = List.from(data!);
+
                 return Padding(
                   padding: EdgeInsetsDirectional.fromSTEB(0, 12, 0, 0),
                   child: Container(
@@ -176,17 +282,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: ListView.builder(
                       padding: EdgeInsets.zero,
                       shrinkWrap: true,
-                      itemCount: data!.length,
+                      itemCount: seacrhSpecificCustomers!.length,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (BuildContext context, int index) {
-                        return CustomerTileWidget(data![index]["customer_name"],data[index]["case_id"],data[index]["address"],data[index]);
+                        return CustomerTileWidget(seacrhSpecificCustomers![index]["customer_name"],seacrhSpecificCustomers![index]["case_id"],seacrhSpecificCustomers![index]["address"],seacrhSpecificCustomers![index]);
                       },
                     ),
                   ),
                 );
               }
             }
-
+            print("Connection Notestablished");
             // Displaying LoadingSpinner to indicate waiting state
             return Center(child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -212,7 +318,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // Future that needs to be resolved
           // inorder to display something on the Canvas
-          future: ApiRepository().FetchListOfCustomers(),
+          future:myCustomerSnapshotFuture,
         ),
 
 
@@ -380,6 +486,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  Future<List<DocumentSnapshot>?> getCustomersList() async {
+    return await ApiRepository().FetchListOfCustomers();
   }
 
 

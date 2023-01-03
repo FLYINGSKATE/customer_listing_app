@@ -125,7 +125,10 @@ class ApiRepository{
   Future<bool> AddUser(String? mailId,String? password) async {
     //print("Adding"+contact.displayName!);
 
-    await AuthenticationHelper().signUp(mailId,password);
+    bool signUpSuccessfull = await AuthenticationHelper().signUp(mailId,password);
+    if(!signUpSuccessfull){
+      return false;
+    }
 
 
     final CollectionReference customerRef = FirebaseFirestore.instance.collection('/customers');
@@ -156,12 +159,9 @@ class ApiRepository{
     return isUserAddedSuccessfully;
   }
 
-  Future<bool> LoginUser(String? email,String? password) async {
-    bool isUserAddedSuccessfully = await ApiRepository().AddUser(email, password);
-    return isUserAddedSuccessfully;
-  }
 
-
+  ///Delete Customer
+  ///uPDATE END DATE OF CUSTOMER
 
 
 

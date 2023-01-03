@@ -235,7 +235,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child:Text('or',style: TextStyle(color: Theme.of(context).backgroundColor),)
               ),
             ),
-            Padding(
+            /*Padding(
               padding: EdgeInsetsDirectional.fromSTEB(0, 24, 0, 0),
               child: ElevatedButton(
                 onPressed: () async {
@@ -267,7 +267,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
 
               ),
-            ),
+            ),*/
             Padding(
               padding: EdgeInsetsDirectional.fromSTEB(0, 120, 0, 0),
               child: Text(

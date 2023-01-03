@@ -1,11 +1,19 @@
+import 'dart:io';
+
 import 'package:customer_listing_app/utils/ApiRepository.dart';
 import 'package:customer_listing_app/utils/utility.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_notification_scheduler/firebase_notification_scheduler.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+
+import 'package:timezone/timezone.dart' as tz;
+import 'main.dart';
 
 class AddCustomerScreen extends StatefulWidget {
   const AddCustomerScreen({Key? key}) : super(key: key);
@@ -47,7 +55,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   final FirebaseNotificationScheduler firebaseNotificationScheduler =
-  FirebaseNotificationScheduler(authenticationKey: 'MjdhYWYyOTItZDdmMi00NjJmLThmMjMtMzlkZGRkMzMzZWYzOlhFczZrc3JSOGhaUng3VXZkRk51Qy9SOHY4NGM0Rks=', rapidApiKey: '');
+  FirebaseNotificationScheduler(authenticationKey: 'MjdhYWYyOTItZDdmMi00NjJmLThmMjMtMzlkZGRkMzMzZWYzOlhFczZrc3JSOGhaUng3VXZkRk51Qy9SOHY4NGM0Rks=', rapidApiKey: '2c209d1819msh5f2300f5b236ab5p1f3fe0jsna4a93376388e');
 
   late Future<List<ScheduledNotification>> getScheduledNotificationFuture;
 
@@ -85,6 +93,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: Theme.of(context).backgroundColor,
@@ -134,7 +146,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                       decoration: InputDecoration(
                         labelText: 'Case Id',
                         errorText: caseIdErrorText,
-                        labelStyle: Theme.of(context).textTheme.bodyText2,
+                        labelStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Colors.grey),
                         hintStyle: Theme.of(context).textTheme.bodyText2,
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -214,7 +226,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                       },
                       decoration: InputDecoration(
                         labelText: 'Start Date',
-                        labelStyle: Theme.of(context).textTheme.bodyText2,
+                        labelStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Colors.grey),
                         hintStyle: Theme.of(context).textTheme.bodyText2,
                         errorText: startDateErrorText,
                         enabledBorder: OutlineInputBorder(
@@ -263,7 +275,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                       decoration: InputDecoration(
                         labelText: 'Expiry Date',
                         errorText: endDateErrorText,
-                        labelStyle: Theme.of(context).textTheme.bodyText2,
+                        labelStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Colors.grey),
                         hintStyle: Theme.of(context).textTheme.bodyText2,
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -345,7 +357,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                       decoration: InputDecoration(
                         labelText: 'Customer Name',
                         errorText: customerNameErrorText,
-                        labelStyle: Theme.of(context).textTheme.bodyText2,
+                        labelStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Colors.grey),
                         hintStyle: Theme.of(context).textTheme.bodyText2,
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -392,7 +404,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                       decoration: InputDecoration(
                         errorText: customerMobileNumberErrorText,
                         labelText: 'Customer Mobile Number',
-                        labelStyle: Theme.of(context).textTheme.bodyText2,
+                        labelStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Colors.grey),
                         hintStyle: Theme.of(context).textTheme.bodyText2,
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -440,7 +452,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                       decoration: InputDecoration(
                         labelText: 'Area',
                         errorText: areaErrorText,
-                        labelStyle: Theme.of(context).textTheme.bodyText2,
+                        labelStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Colors.grey),
                         hintStyle: Theme.of(context).textTheme.bodyText2,
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -488,7 +500,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                       decoration: InputDecoration(
                         labelText: 'WS',
                         errorText: wsErrorText,
-                        labelStyle: Theme.of(context).textTheme.bodyText2,
+                        labelStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Colors.grey),
                         hintStyle: Theme.of(context).textTheme.bodyText2,
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -535,7 +547,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                       decoration: InputDecoration(
                         labelText: 'Unit',
                         errorText: unitErrorText,
-                        labelStyle: Theme.of(context).textTheme.bodyText2,
+                        labelStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Colors.grey),
                         hintStyle: Theme.of(context).textTheme.bodyText2,
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -582,7 +594,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                       decoration: InputDecoration(
                         labelText: 'EGG  Name',
                         errorText: eggErrorText,
-                        labelStyle: Theme.of(context).textTheme.bodyText2,
+                        labelStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Colors.grey),
                         hintStyle: Theme.of(context).textTheme.bodyText2,
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -627,10 +639,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                       controller: remarkController,
                       obscureText: false,
                       decoration: InputDecoration(
-                        labelStyle: Theme.of(context).textTheme.bodyText2,
+                        labelStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Colors.grey),
                         hintText: 'Remark',
                         errorText: remarkErrorText,
-                        hintStyle: Theme.of(context).textTheme.bodyText2,
+                        hintStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Colors.grey),
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                             color: Theme.of(context).backgroundColor,
@@ -676,9 +688,9 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                       obscureText: false,
                       decoration: InputDecoration(
                         errorText: customerAddressErrorText,
-                        labelStyle: Theme.of(context).textTheme.bodyText2,
+                        labelStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Colors.grey),
                         hintText: 'Customer Address',
-                        hintStyle: Theme.of(context).textTheme.bodyText2,
+                        hintStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Colors.grey),
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                             color: Theme.of(context).backgroundColor,
@@ -720,7 +732,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                   Align(
                     alignment: AlignmentDirectional(0, 0.05),
                     child: Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(60, 24, 60, 40),
+                      padding: EdgeInsetsDirectional.fromSTEB(width*0.1, height*0.01, width*0.1, height*0.04),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Theme.of(context).primaryColor,
@@ -772,19 +784,19 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                               wsController!.text,
                               customerMobileNumberController!.text,
                             );
-                            //Loader.hide();
+                            Loader.hide();
                             if(isCustomerAddedSuccessfully){
                               print("Added Customer Successfully");
-                              scheduleAPushNotification(customerNameController!.text.toString(),endDateTime!);
+                              await _zonedScheduleNotification();
+                              Utility().showCustomDialogBox(isCustomerAddedSuccessfully, "Success", "Customer Added Successfully", context);
+                              await Future.delayed(Duration(seconds: 1));
+                              Navigator.pushReplacementNamed(context, "HomeScreen");
                             }
                             else{
                               print("Some Error");
+                              Utility().showCustomDialogBox(isCustomerAddedSuccessfully, "Failed", "Fail To Add Customer", context);
                             }
-
                           }
-
-
-
 
                           setState(() {
 
@@ -802,7 +814,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                             children: [
                               Text('Add Customer',style: Theme.of(context).textTheme.headline1?.copyWith(
                               color: Colors.white,
-                            fontSize: 18,)),
+                            fontSize: width*0.05,)),
                             ],
                           ),
                         ),
@@ -818,50 +830,34 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
     );
   }
 
-  /*Future<void> scheduleAPushNotification(String customerName,DateTime endDate) async {
 
-    String? token = await FirebaseMessaging.instance.getToken();
+  Future<void> _zonedScheduleNotification() async {
 
+    if (kIsWeb || Platform.isLinux) {
+      return;
+    }
 
-    //Schedules a notification to the topic 'any' for next minute
-    final String _payload = {
-      'to': token,
-      "click_action": "FLUTTER_NOTIFICATION_CLICK",
-      "show_in_foreground": true,
-      "notification": {
-        "title": customerName+"\'s",
-        "body": "Subscription Ends Today"
-      },
-      "data": {"key_1": "Value for key_1", "key_2": "Value for key_2"}
-    }.toString();
-    final DateTime _now = DateTime.now().toUtc();
-    final DateTime _dateTimeInUtc = _now.add(const Duration(minutes: 1));
-
-    await firebaseNotificationScheduler.scheduleNotification(
-        payload: _payload, dateTimeInUtc: _dateTimeInUtc);
-  }*/
-
-  Future<void> scheduleAPushNotification(String customerName,DateTime endDate) async {
-
-    String? token = await FirebaseMessaging.instance.getToken();
+    final String? timeZoneName = await FlutterTimezone.getLocalTimezone();
 
 
-    //Schedules a notification to the topic 'any' for next minute
-    final String _payload = {
-      'to': token,
-      "click_action": "FLUTTER_NOTIFICATION_CLICK",
-      "show_in_foreground": true,
-      "notification": {
-        "title": customerName+"\'s",
-        "body": "Subscription Ends Today"
-      },
-      "data": {"key_1": "Value for key_1", "key_2": "Value for key_2"}
-    }.toString();
-    final DateTime _now = DateTime.now().toUtc();
-    final DateTime _dateTimeInUtc = _now.add(const Duration(minutes: 1));
+    // Find the 'current location'
+    final location = await tz.getLocation(timeZoneName!);
 
-    await firebaseNotificationScheduler.scheduleNotification(
-        payload: _payload, dateTimeInUtc: _dateTimeInUtc);
+    final scheduledDate = tz.TZDateTime.from(endDateTime!, location);
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+        0,
+        customerNameController?.text??"Someone"+"\'s",
+        'Subscription is about to Expire Today',
+        scheduledDate,
+        //tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
+        const NotificationDetails(
+            android: AndroidNotificationDetails(
+                'your channel id', 'your channel name',
+                channelDescription: 'your channel description')),
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime);
   }
 
 

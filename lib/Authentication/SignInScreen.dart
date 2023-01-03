@@ -204,21 +204,19 @@ class _SignInScreenState extends State<SignInScreen> {
                     if(passwordController.text.isNotEmpty){
                       //Show Loader
                       PleaseWaitLoaderShow();
-                      bool isSignInSuccessful = await ApiRepository().LoginUser(emailAddressController.text,passwordController.text);
+                      bool isSignInSuccessful = await AuthenticationHelper().signIn(emailAddressController.text,passwordController.text);
                       Loader.hide();
                       //Show Dialog Notification
                       if(isSignInSuccessful){
                         showCustomDialogBox(isSignInSuccessful,"Success","Sign In Success",context);
-
+                        await Future.delayed(Duration(seconds: 1));
+                        Navigator.pushReplacementNamed(context, "HomeScreen");
                       }
                       else{
                         showCustomDialogBox(isSignInSuccessful,"Error","Sign In Unsuccessful",context);
                       }
 
-                      await Future.delayed(Duration(seconds: 1));
-                      Navigator.pushReplacementNamed(context, "HomeScreen");
-                      await Future.delayed(Duration(seconds: 1));
-                      Navigator.pushReplacementNamed(context, "HomeScreen");
+
                     }
                   }
                   else{
@@ -238,7 +236,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   child:Text('or',style: TextStyle(color: Theme.of(context).backgroundColor),)
               ),
             ),
-            Padding(
+            /*Padding(
               padding: EdgeInsetsDirectional.fromSTEB(0, 24, 0, 0),
               child: ElevatedButton(
                 onPressed: () async {
@@ -270,7 +268,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
 
               ),
-            ),
+            ),*/
             Padding(
               padding: EdgeInsetsDirectional.fromSTEB(0, 20, 0, 0),
               child: TextButton(

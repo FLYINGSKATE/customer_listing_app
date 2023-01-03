@@ -1,8 +1,10 @@
+import 'package:customer_listing_app/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'SignInScreen.dart';
 import 'SignUpScreen.dart';
-
+import 'package:timezone/timezone.dart' as tz;
 class AuthScreen extends StatefulWidget {
   const AuthScreen({Key? key}) : super(key: key);
 
@@ -14,8 +16,11 @@ class _AuthScreenState extends State<AuthScreen> {
 
   ImageProvider splashScreenLogo = AssetImage("assets/subscribo.png");
 
+
+
   @override
   Widget build(BuildContext context) {
+
     return DefaultTabController(
       length: 2,
       child: SafeArea(
